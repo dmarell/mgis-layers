@@ -1,0 +1,13 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"name": "ska_edeby"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[17.715, 59.330], [17.765, 59.330], [17.765, 59.355], [17.715, 59.355], [17.715, 59.330]]]
+      }
+    }
+  ]
+}
