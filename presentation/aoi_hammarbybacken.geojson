@@ -1,0 +1,13 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "hammarbybacken" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[18.088, 59.2955], [18.114, 59.2955], [18.114, 59.3065], [18.088, 59.3065], [18.088, 59.2955]]]
+      }
+    }
+  ]
+}
