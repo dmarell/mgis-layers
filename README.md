@@ -59,7 +59,7 @@ pip install -e ".[dev]"
 Or pinned from GitHub, by tag or commit:
 
 ```bash
-pip install "gis_layers @ git+https://github.com/dmarell/mgis-layers@v0.1.0"
+pip install "gis_layers @ git+https://github.com/dmarell/mgis-layers@v0.2.0"
 ```
 
 ## API
