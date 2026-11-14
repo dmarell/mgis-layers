@@ -10,6 +10,7 @@ from pathlib import Path
 from gis_layers.profile import terrain_profile
 from gis_layers.providers.elevation import ElevationProvider
 from gis_layers.providers.elevation_loader import load_elevation
+from gis_layers.providers.nmd_landcover import NmdLandcoverProvider
 from gis_layers.providers.open_elevation import OpenElevationProvider
 from gis_layers.providers.osm_buildings import OsmBuildingsProvider
 from gis_layers.providers.osm_infra import OsmInfraProvider
@@ -32,7 +33,7 @@ def _default_env_path() -> Path:
 
 
 LAYERS = ("elevation", "landuse", "roads", "infra")
-OPTIONAL_LAYERS = ("treeheight", "buildings", "pistes")
+OPTIONAL_LAYERS = ("treeheight", "buildings", "pistes", "landcover")
 AOI_INDEX = "aoi.json"
 
 
@@ -131,6 +132,12 @@ def _cmd_fetch(args: argparse.Namespace) -> int:
                 f"  treeheight (Skogsstyrelsen, 1 m): {len(m['tiles'])} tiles from {years}, "
                 f"{len(m['missing_tiles'])} missing, {m['covered']:.0%} covered, cached in {cache_dir}"
             )
+        if "landcover" in layers:
+            cache_dir = args.out / "landcover"
+            NmdLandcoverProvider.fetch(aoi, cache_dir=cache_dir, buffer_m=args.buffer_m, force=args.force)
+            m = json.loads((cache_dir / "manifest.json").read_text("utf-8"))
+            print(f"  landcover (NMD2023, 10 m): {len(m['codes'])} classes, {m['covered']:.0%} covered, "
+                  f"cached in {cache_dir}")
     write_aoi_index(
         args.out,
         aois,

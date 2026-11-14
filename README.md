@@ -38,6 +38,12 @@ Layers:
 - **Pistes, optional:** downhill runs, cross-country tracks and other pistes (`piste:type=*`,
   ways) via Overpass, as `pistes_<aoi>.geojson`. A closed way with `area=yes` becomes a polygon,
   the rest stay lines. Only with `--layers …,pistes`.
+- **Land cover, optional:** Naturvårdsverket's Nationella Marktäckedata (NMD2023 basskikt v2.1),
+  10 m, one class code per pixel (forest by type, wetland, open land with and without vegetation,
+  built-up land, water). The national file is a 2.7 GB zip, downloaded once to
+  `$GIS_LAYERS_DOWNLOAD_DIR/nmd` (default `~/.cache/gis_layers/nmd`, resumed if interrupted); the
+  AOI is cut out of it as one `nmd.tif`. `code_at()` gives the code, `0` outside the data. Only
+  with `--layers …,landcover`.
 
 The examples use Skå-Edeby airfield west of Stockholm
 ([`examples/aoi_ska_edeby.geojson`](examples/aoi_ska_edeby.geojson)).
@@ -101,7 +107,7 @@ profile along a runway.
 | --- | --- | --- |
 | `--aoi` | required | AOI file (GeoJSON); its bounding box is used |
 | `--out` | required | Directory the layers are written to |
-| `--layers` | `elevation,landuse,roads,infra` | Comma-separated list of layers; add `treeheight`, `buildings` and `pistes` when needed |
+| `--layers` | `elevation,landuse,roads,infra` | Comma-separated list of layers; add `treeheight`, `buildings`, `pistes` and `landcover` when needed |
 | `--elevation-source` | `open` | `open` (OpenTopoData) or `lantmateriet` (1 m) |
 | `--buffer-m` | `0` | Margin around the AOI for all layers, in metres |
 | `--env` | `config/lantmateriet.secret.env`, otherwise `./lantmateriet.secret.env` | File with the Lantmäteriet login |
@@ -148,6 +154,7 @@ What `gis-layers fetch` writes, for example in `data/ska_edeby/`:
 | `treeheight/` | Tree height, only with `--layers …,treeheight`: `chm.tif` and `manifest.json` (below), the tiles in `tiles/` |
 | `osm/buildings_<aoi>.geojson` | Building footprints, only with `--layers …,buildings` |
 | `osm/pistes_<aoi>.geojson` | Pistes, only with `--layers …,pistes` |
+| `landcover/` | Land cover, only with `--layers …,landcover`: `nmd.tif` and `manifest.json` (below) |
 
 `<aoi>` is the AOI's name: the feature's `name` or `id` property in the AOI file.
 
@@ -156,6 +163,12 @@ What `gis-layers fetch` writes, for example in `data/ska_edeby/`:
 a missing value. `manifest.json` has `source`, `dataset`, `url`, `crs`, `resolution_m`, `unit`
 (`dm`), `aoi`, `tiles` (`name`, `year`), `missing_tiles`, `bounds`, `covered` and
 `generated_at`.
+
+**Land cover** is NMD2023 basskikt v2.1: 10 m resolution, SWEREF99 TM, on the national grid.
+`nmd.tif` is the AOI with buffer as uint16 class codes, `0` where the data has none. Open land
+without vegetation (`411`) includes both boulder fields and bare rock. `manifest.json` has
+`source`, `dataset`, `url`, `licence`, `crs`, `resolution_m`, `nodata`, `aoi`, `bounds`, `width`,
+`height`, `covered`, `codes` (code → pixel count), `legend` (code → name) and `generated_at`.
 
 ## Lantmäteriet
 
@@ -234,6 +247,7 @@ src/gis_layers/
     ├── _lantmateriet_auth.py # Lantmäteriet login (Basic, OAuth2)
     ├── open_elevation.py     # OpenTopoData → one dem.tif
     ├── elevation_loader.py   # load_elevation()
+    ├── nmd_landcover.py      # Naturvårdsverket NMD → one nmd.tif
     ├── osm_buildings.py      # building footprints
     ├── osm_infra.py          # power lines, masts, wind turbines, railways, ropeways
     ├── osm_landuse.py
@@ -257,4 +271,5 @@ The tests need no network.
 
 The code is MIT licensed ([LICENSE](LICENSE)). The data the library fetches carries the
 providers' terms: OpenStreetMap data is © OpenStreetMap contributors under ODbL, the elevation
-model contains data from Lantmäteriet, and the tree height comes from Skogsstyrelsen.
+model contains data from Lantmäteriet, the tree height comes from Skogsstyrelsen, and the land
+cover is Naturvårdsverket's Nationella Marktäckedata under CC0.

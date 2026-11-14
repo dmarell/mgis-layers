@@ -4,6 +4,7 @@ from gis_layers.types import AOI, BBox, LatLon, Profile, ProfileSample
 from gis_layers.profile import terrain_profile
 from gis_layers.providers.elevation import ElevationProvider
 from gis_layers.providers.elevation_loader import load_elevation
+from gis_layers.providers.nmd_landcover import NmdLandcoverProvider
 from gis_layers.providers.open_elevation import OpenElevationProvider
 from gis_layers.providers.osm_infra import InfraHit, OsmInfraProvider
 from gis_layers.providers.osm_landuse import OsmLanduseProvider
@@ -20,6 +21,7 @@ __all__ = [
     "ElevationProvider",
     "OpenElevationProvider",
     "load_elevation",
+    "NmdLandcoverProvider",
     "InfraHit",
     "OsmInfraProvider",
     "OsmLanduseProvider",
